@@ -1,4 +1,5 @@
 # SSD_Realization_TensorFlow
+[『TensorFlow』SSD项目复现](https://www.cnblogs.com/hellcat/p/9540591.html)<br>
 ## 使用
 ###### 生成TFR压缩数据
 使用jupyter运行`tfr_generate.ipynb`脚本，使用TFR格式压缩图片对于提升训练速度大有裨益
