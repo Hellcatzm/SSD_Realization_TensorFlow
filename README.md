@@ -24,7 +24,7 @@ image, glabels, gbboxes = \
 gclasses, glocalisations, gscores = \
     ssd.bboxes_encode(glabels, gbboxes, ssd_anchors)
 ```
-这个疏忽导致Loss值维持在200～400之间且不收敛，修改后经过300左右steps损失函数会稳定到60左右，和原SSD网络一致。
+这个疏忽导致Loss值维持在200～400之间且不收敛，修改后经过300左右steps损失函数会稳定到60左右，和原SSD网络一致(示意如下)。
 ![](https://images2018.cnblogs.com/blog/1161096/201808/1161096-20180827102137740-1449500022.png)
 ###### 2.解决了训练速度过慢的问题
 原SSD模型训练速度（CPU：E5-2690，GPU：1080Ti）大概50 samples/sec（实际上略高与此），我的训练速度仅仅22-24 samples/sec，经对比查验，应该是节点分配硬件设备的配置优化问题，涉及队列（主要是数据输入）、优化器设定的节点分派给CPU后（其他节点会默认优先分配给GPU），速度明显提升，大概到达44-46 samples/sec。<br>
