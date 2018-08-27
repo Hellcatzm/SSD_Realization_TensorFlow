@@ -84,7 +84,8 @@ class SSDNet(object):
                                             self.params.anchor_sizes,
                                             self.params.anchor_ratios,
                                             self.params.anchor_steps,  # [8, 16, 32, 64, 100, 300]
-                                            self.params.anchor_offset)
+                                            self.params.anchor_offset  # 0.5
+                                            )
 
     def _ssd_net(self, inputs,
                  scope='ssd_net',
@@ -222,8 +223,14 @@ class SSDNet(object):
                                 offset=0.5,
                                 dtype=np.float32):
         layers_anchors = []
-        # 循环生成ssd特征层的搜索网格
         for i, feat_shape in enumerate(layers_shape):
+            # anchor_bboxes = ssd_anchor_one_layer(img_shape,
+            #                                      feat_shape,
+            #                                      anchor_sizes[i],
+            #                                      anchor_ratios[i],
+            #                                      anchor_steps[i],
+            #                                      offset=offset, dtype=dtype)
+            # layers_anchors.append(anchor_bboxes)
             # 生成feat_shape中HW对应的网格坐标
             y, x = np.mgrid[0:feat_shape[0], 0:feat_shape[1]]
             # step*feat_shape 约等于img_shape，这使得网格点坐标介于0~1，放缩一下即可到图像大小
@@ -247,18 +254,18 @@ class SSDNet(object):
                 h[1] = math.sqrt(anchor_sizes[i][0] * anchor_sizes[i][1]) / img_shape[0]
                 w[1] = math.sqrt(anchor_sizes[i][0] * anchor_sizes[i][1]) / img_shape[1]
                 di += 1
-            for i, r in enumerate(anchor_ratios[i]):
-                h[i + di] = anchor_sizes[i][0] / img_shape[0] / math.sqrt(r)
-                w[i + di] = anchor_sizes[i][0] / img_shape[1] * math.sqrt(r)
+            for l, r in enumerate(anchor_ratios[i]):
+                h[l + di] = anchor_sizes[l][0] / img_shape[0] / math.sqrt(r)
+                w[l + di] = anchor_sizes[l][0] / img_shape[1] * math.sqrt(r)
             layers_anchors.append((y, x, h, w))
-
-            # 绘制各层中心点示意
-            # import matplotlib.pyplot as plt
-            # plt.scatter(y, x, c='r', marker='.')
-            # plt.grid(True)
-            # plt.show()
-            # print(h, w)
         return layers_anchors
+
+        # 绘制各层中心点示意
+        # import matplotlib.pyplot as plt
+        # plt.scatter(y, x, c='r', marker='.')
+        # plt.grid(True)
+        # plt.show()
+        # print(h, w)
 
     def bboxes_encode(self, labels, bboxes, anchors, scope=None):
         return tf_ssd_bboxes_encode(
@@ -483,13 +490,6 @@ def ssd_losses(logits, localisations,  # 预测类别，位置
         gscores = tf.concat(fgscores, axis=0)  # 全部的搜索框，和真实框的IOU
         localisations = tf.concat(flocalisations, axis=0)
         glocalisations = tf.concat(fglocalisations, axis=0)
-
-        """[<tf.Tensor 'ssd_losses/concat:0' shape=(279424, 21) dtype=float32>,
-            <tf.Tensor 'ssd_losses/concat_1:0' shape=(279424,) dtype=int64>,
-            <tf.Tensor 'ssd_losses/concat_2:0' shape=(279424,) dtype=float32>,
-            <tf.Tensor 'ssd_losses/concat_3:0' shape=(279424, 4) dtype=float32>,
-            <tf.Tensor 'ssd_losses/concat_4:0' shape=(279424, 4) dtype=float32>]
-        """
 
         dtype = logits.dtype
         pmask = gscores > match_threshold  # (全部搜索框数目, 21)，类别搜索框和真实框IOU大于阈值
