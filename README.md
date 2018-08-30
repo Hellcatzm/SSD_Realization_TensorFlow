@@ -1,5 +1,5 @@
 # SSD_Realization_TensorFlow
-[『TensorFlow』SSD项目复现](https://www.cnblogs.com/hellcat/p/9540591.html)<br>
+[『TensorFlow × MXNet』SSD项目复现经验](https://www.cnblogs.com/hellcat/p/9540591.html)<br>
 ## 使用
 #### 数据准备
 将VOC2012数据解压到文件夹VOC2012中，注意检查下一级目录包含Annotations文件夹和JPEGImages文件夹。
