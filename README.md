@@ -7,9 +7,16 @@
 使用jupyter运行`tfr_generate.ipynb`脚本，使用TFR格式压缩图片对于提升训练速度大有裨益
 #### 训练模型
 调用脚本即可
-```python
+```bash
 python train_ssd_network.py
 ```
+#### 测试运行
+进入eval目录，运行:
+```bash
+python show_ssd_network.py
+```
+在该脚本中有设置图片路径的位置，替换为想要检测的图片即可。
+
 ## 简要说明
 SSD架构主要有四个部分，网络设计、搜索框设计、学习目标处理、损失函数实现。<br>
 ###### 网络设计
